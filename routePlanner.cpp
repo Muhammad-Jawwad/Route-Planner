@@ -14,9 +14,9 @@ public:
     double latitude;  // latitude coordinate
     double longitude; // longitude coordinate
 
-    double gCost; // cost from start to current node
-    double hCost; // estimated cost from current node to end
-    double fCost; // total cost (fCost = gCost + hCost )
+    double g; // cost from start to current node
+    double h; // estimated cost from current node to end
+    double f; // total cost (f = g + h )
 
     double traffic; // traffic update on the node to neighbor node
 
@@ -44,7 +44,7 @@ public:
 // A* algorithm to find the shortest path between two nodes in the map
 vector<Node *> A_Star(Map *m, Node *start, Node *end);
 
-// Driver Code
+// Driver code
 int main()
 {
 
@@ -68,7 +68,9 @@ int main()
     map.add_Node(new Node("Johar", 24.90566, 67.10178, 0.0));
     map.add_Node(new Node("Millennium Mall", 24.89927, 67.11300, 0.0));
     map.add_Node(new Node("Drig Road", 24.89044, 67.12560, 0.0));
+    map.add_Node(new Node("Malir Halt", 24.8846, 67.1754, 0.0));
     map.add_Node(new Node("Kalaboard", 24.88219, 67.11272, 0.0));
+    map.add_Node(new Node("Malir", 24.902885, 67.197578, 0.0));
 
     // User current location
     string start_name, end_name;
@@ -100,24 +102,24 @@ int main()
 
     return 0;
 }
-
-// Class Node
+// Constructor of class Node
 Node::Node(string name, double lat, double lon, double traffic)
 {
     this->name = name;
     longitude = lon;
     latitude = lat;
 
-    fCost = 0, gCost = 0, hCost = 0;
+    f = 0, g = 0, h = 0;
 
     this->traffic = traffic;
 
     parent = nullptr;
 }
 
+// Adds a node in the map
 void Map::add_Node(Node *node)
 {
-    nodes[node->name] = node; // similar to like nodes["karachi"] = (its long and lat along with fCost,gCost and hCost value)
+    nodes[node->name] = node; // similar to like nodes["karachi"] = (its long and lat along with f,g and h value)
 }
 
 // Returns the distance between two nodes
@@ -157,6 +159,7 @@ vector<Node *> Map::get_Neighbors(Node *node)
     return neighbors;
 }
 
+// A* algorithm to find the shortest path between two nodes in the map
 vector<Node *> A_Star(Map *m, Node *start, Node *end)
 {
     // Initialize the open and closed sets
@@ -166,17 +169,17 @@ vector<Node *> A_Star(Map *m, Node *start, Node *end)
 
     // Add the start node to the open set
     open.push_back(start);
-    start->gCost = 0;
-    start->hCost = m->get_Distance(start, end);
-    start->fCost = start->gCost + start->hCost;
+    start->g = 0;
+    start->h = m->get_Distance(start, end);
+    start->f = start->g + start->h;
 
     while (!open.empty())
     {
-        // Get the node with the lowest fCost value from the open set
+        // Get the node with the lowest f value from the open set
         int min_i = 0;
         for (int i = 1; i < open.size(); i++)
         {
-            if (open[i]->fCost < open[min_i]->fCost)
+            if (open[i]->f < open[min_i]->f)
             {
                 min_i = i;
             }
@@ -211,18 +214,18 @@ vector<Node *> A_Star(Map *m, Node *start, Node *end)
                 continue;
             }
 
-            // Calculate the new gCost value for the neighbor
-            double g_score = current->gCost + m->get_Distance(current, neighbor);
+            // Calculate the new g value for the neighbor
+            double g_score = current->g + m->get_Distance(current, neighbor);
 
             // Check if the neighbor is in the open set
             bool neighbor_in_open = find(open.begin(), open.end(), neighbor) != open.end();
 
-            // Update the neighbor if it is not in the open set, or if the new gCost value is lower than the current gCost value
-            if (!neighbor_in_open || g_score < neighbor->gCost)
+            // Update the neighbor if it is not in the open set, or if the new g value is lower than the current g value
+            if (!neighbor_in_open || g_score < neighbor->g)
             {
-                neighbor->gCost = g_score;
-                neighbor->hCost = m->get_Distance(neighbor, end);
-                neighbor->fCost = neighbor->gCost + neighbor->hCost;
+                neighbor->g = g_score;
+                neighbor->h = m->get_Distance(neighbor, end);
+                neighbor->f = neighbor->g + neighbor->h;
                 neighbor->parent = current;
                 if (!neighbor_in_open)
                 {
