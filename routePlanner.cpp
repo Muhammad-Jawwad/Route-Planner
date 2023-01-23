@@ -1,10 +1,23 @@
+/* This program gives a model for quickly determining the shortest path between two locations
+ using the A* algorithm and data structures, which is significantly more efficient than the
+ Dijkstra algorithm.
+*/
+
+// Header files
 #include <iostream>
 #include <unordered_map>
+#include <string>
 #include <algorithm>
 #include <vector>
 #include <cmath>
 
 using namespace std;
+
+/**
+ * ROUTE PLANNER
+ * Node -> Represents a location in a map
+ * Map -> Graph like structure like actual maps
+ */
 
 // Class Node to represent a node in a map
 class Node
@@ -40,7 +53,14 @@ public:
     // Returns the list of neighboring nodes for a given node
     vector<Node *> get_Neighbors(Node *node);
 };
-
+/**
+ * A* ALGORITHM :-
+ * A* algorithm finds the shortest path between two nodes by combining path cost and an estimation of the cost to the end node, using a priority queue and a heuristic function that must be admissible and consistent.
+ * It uses a priority queue to extract the vertex with the lowest estimated total cost.
+ * Time complexity is O(V^2 + E) with some assumptions.
+ * Efficiency highly depends on the quality of the heuristic function and it can be faster than Dijkstra with an accurate heuristic function.
+ * Guaranteed to find the shortest path when the heuristic function is admissible and consistent.
+ */
 // A* algorithm to find the shortest path between two nodes in the map
 vector<Node *> A_Star(Map *m, Node *start, Node *end);
 
@@ -72,14 +92,14 @@ int main()
     map.add_Node(new Node("Kalaboard", 24.88219, 67.11272, 0.0));
     map.add_Node(new Node("Malir", 24.902885, 67.197578, 0.0));
 
+    cout << "\n***************WELCOME TO ROUTE PLANNER***************" << endl;
     // User current location
     string start_name, end_name;
-    cout << "Enter the name of your current location: ";
+    cout << "\nEnter the name of your current location: ";
     getline(cin, start_name);
-    cout << endl;
 
     // User desired destination
-    cout << "Enter the name of your desired destination: ";
+    cout << "\nEnter the name of your desired destination: ";
     getline(cin, end_name);
 
     Node *start = map.nodes[start_name];
@@ -89,7 +109,8 @@ int main()
     cout << endl
          << endl;
     cout << "Shortest path from " << start_name << " to " << end_name << ": " << endl
-         << endl;
+         << endl
+         << "\t";
 
     // Print the shortest path from start (current location) till end (destination)
     for (int i = 0; i < path.size() - 1; i++)
